@@ -1,8 +1,29 @@
 use "stringext"
+use "json"
 
 class Vec2
 	var x:F64 = 0
 	var y:F64 = 0
+	
+	// Bindings for PonyJson
+	new empty() =>
+		None
+	
+	new fromJson(obj:JsonObject val)? =>
+		x = obj.data("x")? as F64
+		y = obj.data("y")? as F64
+	
+	new fromString(s:String val)? =>
+		let parts = s.split(",")
+		x = parts(0)?.f64()?
+		y = parts(1)?.f64()?
+	
+	fun appendJson(json':String iso):String iso^ =>
+		var json = consume json'
+		json.append(StringExt.format("\"%s,%s\"", x, y))
+	    consume json
+	
+	
 	
 	new create(x':F64, y':F64) =>
 		x = x'
