@@ -11,6 +11,12 @@ class Vec2
 	fun ref string(): String val =>
 		StringExt.format("%s,%s", x, y)
 	
+    fun eq(that: Vec2 box): Bool =>
+      """
+      Returns true if the two vectors are close to equal
+      """
+	  ((x - that.x).abs() < 0.01) and ((y - that.y).abs() < 0.01)
+	
 	fun length():F64 =>
 		((x * x) + (y * y)).sqrt()
 	
@@ -22,6 +28,12 @@ class Vec2
 		let y' = y
 		x = (x' * q.cos()) - (y' * q.sin())
 		y = (x' * q.sin()) + (y' * q.cos())
+	
+	fun ref rotateAround(c:Vec2, q:F64) =>
+		let x' = x - c.x
+		let y' = y - c.y
+		x = ((x' * q.cos()) - (y' * q.sin())) + c.x
+		y = ((x' * q.sin()) + (y' * q.cos())) + c.y
 
 	fun angleSigned(b:Vec2):F64 =>
 		let length_of_a = length()

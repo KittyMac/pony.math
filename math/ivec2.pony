@@ -10,3 +10,6 @@ class IVec2
 	
 	fun ref string(): String val =>
 		StringExt.format("%s,%s", x, y)
+	
+    fun eq(that: IVec2 box): Bool =>
+		(x == that.x) and (y == that.y)
