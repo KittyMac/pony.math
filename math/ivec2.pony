@@ -34,3 +34,10 @@ class IVec2
 	
     fun eq(that: IVec2 box): Bool =>
 		(x == that.x) and (y == that.y)
+	
+	
+	fun length():F64 =>
+		((x * x) + (y * y)).f64().sqrt().round()
+	
+	fun distance(b:IVec2):I64 =>
+		(((b.x - x) * (b.x - x)) + ((b.y - y) * (b.y - y))).f64().sqrt().round().i64()
