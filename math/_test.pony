@@ -10,6 +10,8 @@ actor Main is TestList
 	test(_TestMathDistance)
 	test(_TestMathRotateBy)
 	test(_TestMathRotateAround)
+	
+	test(_TestIVecN)
 		
 	
  	fun @runtime_override_defaults(rto: RuntimeOptions) =>
@@ -48,4 +50,24 @@ class iso _TestMathRotateAround is UnitTest
 		let b = Vec2(-50,50)
 		a.rotateAround(c, F64.pi())
 		h.complete( a == b )
+
+class iso _TestIVecN is UnitTest
+	fun name(): String => "ivecN"
+	fun apply(h: TestHelper) =>
+		let a = IVecN
+		var passed = true
+		
+		a.set(5, 99)
+		
+		a.set(2, 13)
+		
+		if a.get(10) != 0 then
+			passed = false
+		end
+		
+		if a.string() != "0,0,13,0,0,99" then
+			passed = false
+		end		
+		
+		h.complete( passed )
 
