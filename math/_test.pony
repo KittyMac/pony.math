@@ -1,5 +1,6 @@
 use "ponytest"
 use "files"
+use "collections"
 
 actor Main is TestList
 	new create(env: Env) => PonyTest(env, this)
@@ -12,6 +13,7 @@ actor Main is TestList
 	test(_TestMathRotateAround)
 	
 	test(_TestIVecN)
+	test(_TestIMatrix)
 		
 	
  	fun @runtime_override_defaults(rto: RuntimeOptions) =>
@@ -71,3 +73,24 @@ class iso _TestIVecN is UnitTest
 		
 		h.complete( passed )
 
+
+class iso _TestIMatrix is UnitTest
+	fun name(): String => "imatrix"
+	fun apply(h: TestHelper) =>
+		let m = IMatrix(11)
+		var passed = true
+
+		for x in Range[USize](0, 11) do
+			m.set((x,x), 1)
+			m.set((10-x,x), 1)
+			m.set((5,x), 1)
+			m.set((x,5), 1)
+		end
+		
+		//h.env.out.print(m.string())
+		
+		if m.string() != "[11x11] =>\n 1   0   0   0   0   1   0   0   0   0   1  \n 0   1   0   0   0   1   0   0   0   1   0  \n 0   0   1   0   0   1   0   0   1   0   0  \n 0   0   0   1   0   1   0   1   0   0   0  \n 0   0   0   0   1   1   1   0   0   0   0  \n 1   1   1   1   1   1   1   1   1   1   1  \n 0   0   0   0   1   1   1   0   0   0   0  \n 0   0   0   1   0   1   0   1   0   0   0  \n 0   0   1   0   0   1   0   0   1   0   0  \n 0   1   0   0   0   1   0   0   0   1   0  \n 1   0   0   0   0   1   0   0   0   0   1  \n" then
+			passed = false
+		end
+
+		h.complete( passed )
