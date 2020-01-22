@@ -15,21 +15,24 @@ class IMatrix
 		error
 	
 	new fromString(s:String val)? =>
-		let parts:Array[String] val = s.split(",")		
+		let parts:Array[String] val = s.split(",")
+		var idx:USize = 0
 		for v in parts.values() do
 			if width == 0 then
+				width = v.usize()?
 				resize(width)
 			else
-				values.push(v.i64()?)
+				values(idx)? = v.i64()?
+				idx = idx + 1
 			end
 		end
-	
+			
 	fun appendJson(json':String iso):String iso^ =>
 		var json = consume json'
 		json.push('"')
 		// first value is always the width
 		json.append(width.string())
-		json.push(',')
+		json.push(',')		
 		for v in values.values() do
 			json.append(v.string())
 			json.push(',')
@@ -44,6 +47,7 @@ class IMatrix
 		resize(dimensions)
 	
 	fun ref resize(dimensions:USize) =>
+			
 		// would be cooler to do this in place, but we'll leave that for another time
 		let old_values = values
 		let old_width = width
@@ -51,8 +55,6 @@ class IMatrix
 		width = dimensions
 		values = Array[I64](width * width)
 		values.undefined(width * width)
-		
-		@fprintf[I32](@pony_os_stdout[Pointer[U8]](), "resize: %d to %d\n".cstring(), old_width, width)
 		
 		for x in Range[USize](0, old_width) do
 			for y in Range[USize](0, old_width) do
@@ -75,7 +77,7 @@ class IMatrix
 		end
 	
 	fun ref set(p:(USize,USize), v:I64) =>
-		let m = p._1.max(p._2)
+		let m = p._1.max(p._2) + 1
 		if m >= width then
 			resize(m)
 		end
