@@ -50,11 +50,7 @@ class IMatrix
 	new create(new_rows:USize, new_cols:USize) =>
 		resize(new_rows, new_cols)
 	
-	fun ref resize(new_rows:USize, new_cols:USize) =>
-		
-		@fprintf[I32](@pony_os_stdout[Pointer[U8]](), StringExt.format("resize to %s, %s\n", new_rows, new_cols).cstring())
-		
-		
+	fun ref resize(new_rows:USize, new_cols:USize) =>		
 		// would be cooler to do this in place, but we'll leave that for another time
 		let old_values = values
 		let old_rows = rows
