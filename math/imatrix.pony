@@ -4,7 +4,8 @@ use "collections"
 
 class IMatrix
 	var values:Array[I64] = Array[I64]
-	var width:USize = 0
+	var cols:USize = 0
+	var rows:USize = 0
 	
 	// Bindings for PonyJson
 	new empty() =>
@@ -18,9 +19,11 @@ class IMatrix
 		let parts:Array[String] val = s.split(",")
 		var idx:USize = 0
 		for v in parts.values() do
-			if width == 0 then
-				width = v.usize()?
-				resize(width)
+			if rows == 0 then
+				rows = v.usize()?
+			elseif cols == 0 then
+				cols = v.usize()?
+				resize(rows,cols)
 			else
 				values(idx)? = v.i64()?
 				idx = idx + 1
@@ -30,9 +33,10 @@ class IMatrix
 	fun appendJson(json':String iso):String iso^ =>
 		var json = consume json'
 		json.push('"')
-		// first value is always the width
-		json.append(width.string())
-		json.push(',')		
+		json.append(rows.string())
+		json.push(',')
+		json.append(cols.string())
+		json.push(',')
 		for v in values.values() do
 			json.append(v.string())
 			json.push(',')
@@ -43,61 +47,69 @@ class IMatrix
 		
 	
 	
-	new create(dimensions:USize) =>
-		resize(dimensions)
+	new create(new_rows:USize, new_cols:USize) =>
+		resize(new_rows, new_cols)
 	
-	fun ref resize(dimensions:USize) =>
-			
+	fun ref resize(new_rows:USize, new_cols:USize) =>
+		
+		@fprintf[I32](@pony_os_stdout[Pointer[U8]](), StringExt.format("resize to %s, %s\n", new_rows, new_cols).cstring())
+		
+		
 		// would be cooler to do this in place, but we'll leave that for another time
 		let old_values = values
-		let old_width = width
+		let old_rows = rows
+		let old_cols = cols
 		
-		width = dimensions
-		values = Array[I64](width * width)
-		values.undefined(width * width)
+		rows = new_rows
+		cols = new_cols
 		
-		for x in Range[USize](0, old_width) do
-			for y in Range[USize](0, old_width) do
-				try values((y * width) + x)? = old_values((y * old_width) + x)? end
+		values = Array[I64](rows * cols)
+		values.undefined(rows * cols)
+		
+		for x in Range[USize](0, old_cols) do
+			for y in Range[USize](0, old_rows) do
+				try values((y * cols) + x)? = old_values((y * old_cols) + x)? end
 			end
 		end
 		
-		for x in Range[USize](old_width, width) do
-			for y in Range[USize](old_width, width) do
-				try values((y * width) + x)? = 0 end
+		for x in Range[USize](old_cols, cols) do
+			for y in Range[USize](old_rows, rows) do
+				try values((y * cols) + x)? = 0 end
 			end
 		end
 		
 		
 	fun ref get(p:(USize,USize)):I64 =>
+		"""
+		p is specified as (row,col)
+		"""
 		try
-			values((p._2 * width) + p._1)?
+			values((p._1 * cols) + p._2)?
 		else
 			0
 		end
 	
 	fun ref set(p:(USize,USize), v:I64) =>
-		let m = p._1.max(p._2) + 1
-		if m >= width then
-			resize(m)
+		"""
+		p is specified as (row,col)
+		"""
+		if (p._1 >= rows) or (p._2 >= cols) then
+			resize((p._1+1).max(rows), (p._2+1).max(cols))
 		end
-		try values((p._2 * width) + p._1)? = v end
+		try values((p._1 * cols) + p._2)? = v end
 	
 	fun ref string(): String val =>
 		let s = recover trn String(128) end
 		
 		s.push('[')
-		s.append(width.string())
+		s.append(rows.string())
 		s.push('x')
-		s.append(width.string())
+		s.append(cols.string())
 		s.append("] =>\n")
 		
-		for y in Range[USize](0, width) do
-			for x in Range[USize](0, width) do
-				try
-					let v = values((y * width) + x)?
-					s.append(StringExt.format("%4s", v))
-				end
+		for row in Range[USize](0, rows) do
+			for col in Range[USize](0, cols) do
+				s.append(StringExt.format("%4s", get((row, col))))
 			end
 			s.push('\n')
 		end

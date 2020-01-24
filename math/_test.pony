@@ -77,7 +77,7 @@ class iso _TestIVecN is UnitTest
 class iso _TestIMatrix is UnitTest
 	fun name(): String => "imatrix"
 	fun apply(h: TestHelper) =>
-		let m = IMatrix(11)
+		let m = IMatrix(3, 3)
 		var passed = true
 
 		for x in Range[USize](0, 11) do
