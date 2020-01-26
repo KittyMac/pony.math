@@ -2,8 +2,8 @@ use "stringext"
 use "json"
 use "collections"
 
-class IMatrix
-	var values:Array[I64] = Array[I64]
+class Matrix
+	var values:Array[F64] = Array[F64]
 	var cols:USize = 0
 	var rows:USize = 0
 	
@@ -25,7 +25,7 @@ class IMatrix
 				cols = v.usize()?
 				resize(rows,cols)
 			else
-				values(idx)? = v.i64()?
+				values(idx)? = v.f64()?
 				idx = idx + 1
 			end
 		end
@@ -59,7 +59,7 @@ class IMatrix
 		rows = new_rows
 		cols = new_cols
 		
-		values = Array[I64](rows * cols)
+		values = Array[F64](rows * cols)
 		values.undefined(rows * cols)
 		
 		for x in Range[USize](0, old_cols) do
@@ -75,7 +75,7 @@ class IMatrix
 		end
 		
 		
-	fun ref get(p:(USize,USize)):I64 =>
+	fun ref get(p:(USize,USize)):F64 =>
 		"""
 		p is specified as (row,col)
 		"""
@@ -85,7 +85,7 @@ class IMatrix
 			0
 		end
 	
-	fun ref set(p:(USize,USize), v:I64) =>
+	fun ref set(p:(USize,USize), v:F64) =>
 		"""
 		p is specified as (row,col)
 		"""
@@ -112,7 +112,7 @@ class IMatrix
 
 		consume s
 	
-    fun eq(that: IMatrix box): Bool =>
+    fun eq(that: Matrix box): Bool =>
 		if this is that then
 			return true
 		end
